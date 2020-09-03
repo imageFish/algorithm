@@ -10,6 +10,7 @@ a = '[-2,null,-3]'
 
 start = datetime.now()
 
-res = solve.getLeastNumbers([0,1,1,2,4,4,1,3,3,2], 6)
+res = solve.countDigitOne(824883294
+)
 print(res)
 print(datetime.now() - start)

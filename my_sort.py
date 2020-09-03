@@ -71,6 +71,7 @@ def merge_sort(arr, l, r):
         merged.extend(arr[j:r+1])
     arr[l:r+1] = merged
 
+
 def heap_sort(arr):
     import heapq
     heapq.heapify(arr)
@@ -79,9 +80,6 @@ def heap_sort(arr):
         res.append(heapq.heappop(arr))
     return res
 
-def creat_heap(arr):
-    a = deepcopy(arr)
-    # for i in range
 
     
         

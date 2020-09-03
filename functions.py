@@ -1,4 +1,5 @@
 import collections
+from copy import deepcopy
 
 
 class Solution:
@@ -440,28 +441,39 @@ class Solution:
         return res
 
     def getLeastNumbers(self, arr, k):
-        res = arr[:k]
-        res.sort()
-        for n in range(k, len(arr)):
-            n = arr[n]
-            tmp = [float('-inf')] + res + [float('inf')]
-            l = 0
-            r = k+1
-            while True:
-                m = (l+r) // 2
-                if l == m:
-                    break
-                if tmp[m] <= n and n <= tmp[m+1]:
-                    break
-                if tmp[m] >= n:
-                    r = m
-                elif tmp[m+1] <= n:
-                    l = m
-            if tmp[m] <= n and n <= tmp[m+1] and m != k:
-                if m < 0:
-                    m = 0
-                res = res[:m] + [n] + res[m:k-1]
+        import heapq
+        res = heapq.nsmallest(k, arr)
         return res
+
+        import heapq
+        # import _heapq as heapq
+        l = len(arr)
+        k = min(l, k)
+        if k == 0:
+            return []
+        res = deepcopy(arr[:k])
+        heapq._heapify_max(res)
+        for i in range(k, l):
+            if arr[i] < res[0]:
+                res[0] = arr[i]
+                heapq._siftup_max(res, 0)
+        return res
+        
+    def countDigitOne(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        cnt = 0
+        for i in range(1, n+1):
+            while True:
+                m = i % 10
+                i = i // 10
+                if m == 1:
+                    cnt += 1
+                if i == 0:
+                    break
+        return cnt
 
     
 
