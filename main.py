@@ -10,7 +10,8 @@ a = '[-2,null,-3]'
 
 start = datetime.now()
 
-res = solve.countDigitOne(824883294
+res = solve.minNumber(
+    [3,30,34,5,9]
 )
 print(res)
 print(datetime.now() - start)

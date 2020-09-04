@@ -458,28 +458,40 @@ class Solution:
                 res[0] = arr[i]
                 heapq._siftup_max(res, 0)
         return res
-        
+
     def countDigitOne(self, n):
         """
         :type n: int
         :rtype: int
         """
-        cnt = 0
-        for i in range(1, n+1):
-            while True:
-                m = i % 10
-                i = i // 10
-                if m == 1:
-                    cnt += 1
-                if i == 0:
-                    break
-        return cnt
+        high = n // 10
+        low = 0
+        digit = 1
+        cur = n % 10
+        res = 0
+        while high != 0 or cur != 0:
+            if cur == 0:
+                res += high * digit
+            elif cur == 1:
+                res += high * digit + low + 1
+            else:
+                res += (high + 1) * digit
+            digit *= 10
+            cur = high % 10
+            high = high // 10
+            low = n % digit
+        return res
 
-    
-
-
-
-
+    def minNumber(self, nums):
+        nums = [str(i) for i in nums]
+        nums.sort()
+        res = ''
+        while nums:
+            l = 0
+            while nums[l][0] == nums[0][0]:
+                l += 1
+            tmp = 
+        return res
 
 class TreeNode:
     def __init__(self, x):
