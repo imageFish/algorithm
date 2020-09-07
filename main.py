@@ -4,14 +4,14 @@
 
 from functions import Solution
 from datetime import datetime
+from copy import deepcopy
 solve = Solution()
-a = '[-2,null,-3]'
-# a = solve.getLeastNumbers(a)
 
 start = datetime.now()
 
-res = solve.minNumber(
-    [3,30,34,5,9]
+res = solve.reversePairs(
+    [1,3,2,3,1]
 )
 print(res)
+
 print(datetime.now() - start)

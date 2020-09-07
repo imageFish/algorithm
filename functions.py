@@ -483,15 +483,175 @@ class Solution:
         return res
 
     def minNumber(self, nums):
+        def binary_sort(l, r):
+            if r-l < 1:
+                return
+            m = (l+r) >> 1
+            m += 1
+            binary_sort(l, m-1) 
+            binary_sort(m, r)
+            tmp = []
+            tmp_l = r-l+1
+            _l, _m = l, m 
+            while _l < m and _m < r+1:
+                if nums[_l] + nums[_m] < nums[_m] + nums[_l]:
+                    tmp.append(nums[_l])
+                    _l += 1
+                else:
+                    tmp.append(nums[_m])
+                    _m += 1
+            if _l < m:
+                tmp.extend(nums[_l:m])
+            if _m < r+1:
+                tmp.extend(nums[_m:r+1])
+            nums[l:r+1] = tmp
+        def quick_sort(l, r):
+            if r-l < 1:
+                return
+            _l, _r = l, r 
+            while _l < _r:
+                while _l < _r and nums[l] + nums[_r] <= nums[_r] + nums[l]:
+                    _r -= 1
+                while _l < _r and nums[l] + nums[_l] >= nums[_l] + nums[l]:
+                    _l += 1
+                nums[_l], nums[_r] = nums[_r], nums[_l]
+            nums[_l], nums[l] = nums[l], nums[_l]
+            quick_sort(l, _l-1)
+            quick_sort(_l+1, r)
+
         nums = [str(i) for i in nums]
-        nums.sort()
-        res = ''
-        while nums:
-            l = 0
-            while nums[l][0] == nums[0][0]:
-                l += 1
-            tmp = 
+        # binary_sort(0, len(nums)-1)
+        quick_sort(0, len(nums)-1)
+        return ''.join(nums)
+
+    def translateNum(self, num):
+        """
+        :type num: int
+        :rtype: int
+        """
+        num = str(num)
+        dp = [0] * (len(num)+1)
+        dp[1] = 1
+        dp[0] = 1
+        for i in range(1, len(num)):
+            dp[i+1] = dp[i]
+            if num[i-1] == '0':
+                continue
+            t = int(num[i-1:i+1])
+            if 0<=t and t<=25:
+                dp[i+1] += dp[i-1]
+        return dp[-1]
+
+    def maxValue(self, grid):
+        """
+        :type grid: List[List[int]]
+        :rtype: int
+        """
+        m, n = len(grid), len(grid[0])
+        dp_last = [0] * (n+1)
+        for i in range(m):
+            dp = [0] * (n+1)
+            for j in range(n):
+                dp[j+1] = max(dp[j], dp_last[j+1]) + grid[i][j]
+            dp_last = dp
+        return dp_last[-1]
+
+    def lengthOfLongestSubstring(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        # char = {}
+        max_len = 0
+        res = 0
+        for i in range(len(s)):
+            j = 0
+            while j < max_len:
+                if s[i-1-j] == s[i]:
+                    break
+                j += 1
+            if j == max_len-1 and s[i-1-j] != s[i]:
+                max_len += 1
+            else:
+                max_len = j+1
+            res = max(max_len, res)
         return res
+    
+    def nthUglyNumber(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        dp = [1]
+        a = b = c = 0
+        for i in range(1, n):
+            _a = dp[a] * 2
+            _b = dp[b] * 3
+            _c = dp[c] * 5
+            dp.append(min(_a, _b, _c))
+            if dp[-1] == _a: a += 1
+            if dp[-1] == _b: b += 1
+            if dp[-1] == _c: c += 1
+        return dp[-1]
+
+    def reversePairs(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        def bst(l, r, t):
+            if r-l < 0:
+                return 0 
+            _l, _r = l, r
+            while r-l > 1:
+                m = (l+r) >> 1
+                if t <= nums[m]: r = m 
+                else: l = m
+            if nums[l] >= t:
+                return 0
+            if nums[r] < t:
+                return r-_l+1
+            if nums[r] == t:
+                return r-_l
+            return l-_l+1
+        def pre_sum():
+            tmp = []
+            for n in nums[::-1]:
+                l, r = 0, len(tmp)
+                while r-l < 1:
+                    m = (l+r) >> 1
+                    if tmp[m] >= nums[i]: r=m
+                    else: l=m
+                if 
+        def quick_sort(l, r):
+            if r-l < 1:
+                return 0
+            m = (l+r) >> 1
+            res = quick_sort(l, m) 
+            res += quick_sort(m+1, r)
+            tmp = []
+            _l, _r = l, m+1
+            while _l <= m and _r <= r:
+                if nums[_l] <= nums[_r]:
+                    tmp.append(nums[_l])
+                    _l += 1
+                else:
+                    res += m+1-_l
+                    tmp.append(nums[_r])
+                    _r += 1
+            if _l <= m:
+                tmp.extend(nums[_l:m+1])
+            if _r <= r:
+                tmp.extend(nums[_r:r+1])
+            nums[l:r+1] = tmp
+            return res
+        return quick_sort(0, len(nums)-1)
+            
+
+
+
+
+
 
 class TreeNode:
     def __init__(self, x):
