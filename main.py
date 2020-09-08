@@ -9,8 +9,8 @@ solve = Solution()
 
 start = datetime.now()
 
-res = solve.reversePairs(
-    [1,3,2,3,1]
+res = solve.singleNumber(
+    [9,1,7,9,7,9,7]
 )
 print(res)
 

@@ -615,14 +615,28 @@ class Solution:
                 return r-_l
             return l-_l+1
         def pre_sum():
-            tmp = []
-            for n in nums[::-1]:
-                l, r = 0, len(tmp)
-                while r-l < 1:
+            if len(nums) < 2:
+                return 0
+            tmp = [nums[-1]]
+            res = 0
+            for n in range(len(nums)-2, -1, -1):
+                n = nums[n]
+                if n <= tmp[0]:
+                    tmp.insert(0, n)
+                    continue
+                if n > tmp[-1]:
+                    res += len(tmp)
+                    tmp.append(n)
+                    continue
+                l, r = 0, len(tmp)-1
+                while r-l > 1:
                     m = (l+r) >> 1
-                    if tmp[m] >= nums[i]: r=m
+                    if tmp[m] >= n: r=m
                     else: l=m
-                if 
+                res += r
+                tmp.insert(r, n)
+            return res
+        return pre_sum()
         def quick_sort(l, r):
             if r-l < 1:
                 return 0
@@ -647,7 +661,43 @@ class Solution:
             return res
         return quick_sort(0, len(nums)-1)
             
+    def singleNumbers(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: List[int]
+        """
+        xor = 0
+        for n in nums:
+            xor ^= n
+        
+        bit = 1
+        while xor & bit == 0:
+            bit <<= 1
 
+        res = [0, 0]
+        for n in nums:
+            if n & bit == 0:
+                res[0] ^= n
+            else:
+                res[1] ^= n
+        return res
+    def singleNumber(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        bits = [0] * 32
+        for n in nums:
+            bit = 1
+            for i in range(32):
+                if n&bit > 0:
+                    bits[i] += 1
+                bit <<= 1
+        res = 0
+        for i in range(31, -1, -1):
+            bits[i] %= 3
+            res = res * 2 + bits[i]
+        return res
 
 
 

@@ -5,3 +5,6 @@ if a+b > b+a: # string concat
     # exchanging a and b will make the order less
     # so the problem is equal to that sort the array by comparing the string consisted of each two number
 ```
+
+## xor
+&, |, ^, meets the law of commutation and association.
