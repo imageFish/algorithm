@@ -10,7 +10,7 @@ solve = Solution()
 start = datetime.now()
 
 res = solve.add(
-    10, 17
+    3, -1
 )
 print(res)
 

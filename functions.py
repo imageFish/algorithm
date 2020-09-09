@@ -843,17 +843,45 @@ class Solution:
 
     def add(self, a, b):
         def _add(a, b):
-            s = c = 0
-            while a > 0 or b > 0:
+            res = 0
+            c = 0
+            s = 1
+            while a or b or c:
                 _a, _b = a&1, b&1
                 _c = _a&(_b^c) | _b&c
-                _s = (1^c)&_a&_b | c
-                
+                _s = (1^c)&(_a^_b) | (c&(1^(_a^_b)))
+                if _s:
+                    res ^= s
+
+                s <<= 1
                 a >>= 1
                 b >>= 1
                 c = _c
+            return res
                 
         def _subtract(a, b):
+            flag = False
+            if a < b:
+                flag
+                a, b = b, a
+            res = 0
+            c = 0
+            s = 1
+            while a or b or c:
+                _a, _b = a&1, b&1
+                _c = (1^_a)&(_b^c) | _b&c
+                _s = (1^c)&(_a^_b) | (c&(1^(_a^_b)))
+                if _s:
+                    res ^= s
+
+                s <<= 1
+                a >>= 1
+                b >>= 1
+                c = _c
+            if flag:
+                res = ~res
+            return res
+        res = _add(a, b)
         return res
             
             
