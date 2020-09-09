@@ -698,6 +698,167 @@ class Solution:
             bits[i] %= 3
             res = res * 2 + bits[i]
         return res
+    def twoSum(self, nums, target):
+        """
+        :type nums: List[int]
+        :type target: int
+        :rtype: List[int]
+        """
+        l, r = 0, len(nums)-1
+        while l < r:
+            s = nums[l] + nums[r]
+            if s == target:
+                return nums[l], nums[r]
+            if s > target:
+                r -= 1
+            else:
+                l += 1
+
+    def findContinuousSequence(self, target):
+        """
+        :type target: int
+        :rtype: List[List[int]]
+        """
+        res = []
+        n = 2
+        while True:
+            s = 2*target // n
+            if s * n != 2*target:
+                n += 1
+                continue
+            if s < n+1:
+                break
+            l = (s+1-n) >> 1
+            if l<<1 != s+1-n:
+                n += 1
+                continue
+            tmp = [0] * n
+            for i in range(n):
+                tmp[i] = i+l
+            res.append(tmp)
+            n += 1
+        return res[::-1]
+
+    def maxSlidingWindow(self, nums, k):
+        res = []
+        if len(nums) == 0:
+            return res
+        stack = collections.deque() # bidirection queue
+        for i in range(k):
+            while stack and nums[i] > stack[-1]:
+                stack.pop()
+            stack.append(nums[i])
+        res.append(stack[0])
+        for i in range(k, len(nums)):
+            if nums[i-k] == stack[0]:
+                stack.popleft()
+            while stack and nums[i] > stack[-1]:
+                stack.pop()
+            stack.append(nums[i])
+            res.append(stack[0])
+        return res
+
+
+    def _twoSum(self, n):
+        """
+        :type n: int
+        :rtype: List[float]
+        """
+        res = [0] * 6
+        for i in range(6):
+            res[i] = 1/6
+        for i in range(2, n+1):
+            tmp = [0] * (5*i+1)
+            for j in range(6):
+                for k in range(5*i-4):
+                    s = j + k
+                    tmp[s] += 1/6*res[k]
+            res = tmp
+        return res
+
+
+
+        def _rec(n):
+            if n == 0:
+                return {0:1}
+            sum_set = {}
+            subsum_set = _rec(n-1)
+            for s in range(1, 7):
+                for k in subsum_set.keys():
+                    p = 1/6 * subsum_set[k]
+                    _s = s + k
+                    if _s in sum_set:
+                        sum_set[_s] += p
+                    else:
+                        sum_set[_s] = p
+            return sum_set
+        res = _rec(n)
+        res = [[k,v] for k,v in res.items()]
+        res.sort(key=lambda x: x[0])
+        return [t[1] for t in res]
+    def _cnt(self, h, p, t):
+        def cnt(h, p, t, i=0, last='_'):
+            if h < 0 or p < 0 or t < 0:
+                return 0
+            if h==0 and p==0 and t==0:
+                return 1
+            res = 0
+            kinds = ['h', 'p', 't']
+            for k in kinds:
+                if k == last:
+                    continue
+                if k == 'h' and i > 3:
+                    res += cnt(h-1, p, t, i+1, 'h')
+                    res += cnt(h-2, p, t, i+2, 'h')
+                elif k == 'p':
+                    res += cnt(h, p-1, t, i+1, 'p')
+                    res += cnt(h, p-2, t, i+2, 'p')
+                elif k == 't':
+                    res += cnt(h, p, t-1, i+1, 't')
+                    res += cnt(h, p, t-2, i+2, 't')
+            return res
+        return cnt(h, p, t)
+    
+    
+    def lastRemaining(self, n, m):
+        """
+        :type n: int
+        :type m: int
+        :rtype: int
+        """ 
+        f = 0
+        for i in range(2, n+1):
+            f = (m+f)%i
+        return f
+
+        last = 0 if m%2==0 else 1   
+        for i in range(3, n+1):
+            r = (m-1) % i
+            y = (last+r)%(i-1)
+            if y < r:
+                last = y
+            else:
+                last = (y+1)%i
+        return last
+
+    def add(self, a, b):
+        def _add(a, b):
+            s = c = 0
+            while a > 0 or b > 0:
+                _a, _b = a&1, b&1
+                _c = _a&(_b^c) | _b&c
+                _s = (1^c)&_a&_b | c
+                
+                a >>= 1
+                b >>= 1
+                c = _c
+                
+        def _subtract(a, b):
+        return res
+            
+            
+
+            
 
 
 

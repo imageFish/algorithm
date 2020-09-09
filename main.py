@@ -9,8 +9,8 @@ solve = Solution()
 
 start = datetime.now()
 
-res = solve.singleNumber(
-    [9,1,7,9,7,9,7]
+res = solve.add(
+    10, 17
 )
 print(res)
 
