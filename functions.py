@@ -258,7 +258,7 @@ class Solution:
                 node.left = TreeNode(int(vals[i]))
                 queue.append(node.left)
             i += 1
-            if vals[i] != "null":
+            if i < len(vals) and vals[i] != "null":
                 node.right = TreeNode(int(vals[i]))
                 queue.append(node.right)
             i += 1
@@ -842,47 +842,86 @@ class Solution:
         return last
 
     def add(self, a, b):
-        def _add(a, b):
-            res = 0
-            c = 0
-            s = 1
-            while a or b or c:
-                _a, _b = a&1, b&1
-                _c = _a&(_b^c) | _b&c
-                _s = (1^c)&(_a^_b) | (c&(1^(_a^_b)))
-                if _s:
-                    res ^= s
-
-                s <<= 1
-                a >>= 1
-                b >>= 1
-                c = _c
-            return res
-                
-        def _subtract(a, b):
-            flag = False
-            if a < b:
-                flag
-                a, b = b, a
-            res = 0
-            c = 0
-            s = 1
-            while a or b or c:
-                _a, _b = a&1, b&1
-                _c = (1^_a)&(_b^c) | _b&c
-                _s = (1^c)&(_a^_b) | (c&(1^(_a^_b)))
-                if _s:
-                    res ^= s
-
-                s <<= 1
-                a >>= 1
-                b >>= 1
-                c = _c
-            if flag:
-                res = ~res
-            return res
-        res = _add(a, b)
+        x = 0xffffffff
+        a, b = a & x, b & x
+        while b!=0:
+            a, b = a^b, (a&b)<<1 & x 
+        return a if a <= 0x7fffffff else ~(a ^ x)
+    def constructArr(self, a):
+        """
+        :type a: List[int]
+        :rtype: List[int]
+        """
+        al = len(a)
+        pre_mul, post_mul = [0]*(al+2), [0]*(al+2)
+        pre_mul[0], post_mul[-1] = 1, 1
+        for i in range(1, al+1):
+            pre_mul[i] = pre_mul[i-1]*a[i-1]
+            j = al+1-i
+            post_mul[j] = post_mul[j+1]*a[j-1]
+        res = []
+        for i in range(al):
+            i += 1
+            res.append(pre_mul[i-1]*post_mul[i+1])
         return res
+    
+    def strToInt(self, str: str) -> int:
+        flag = True
+        s = t = -1
+        for i in range(len(str)):
+            if flag:
+                if str[i] == ' ':
+                    continue
+                flag = False
+                if str[i] == '+' or str[i] == '-' or ('0'<=str[i] and str[i]<='9'):
+                    s = i
+                else:
+                    return 0
+            else:
+                if '0' <= str[i] and str[i] <= '9':
+                    t = i 
+                else:
+                    break
+        if s != -1 and str[s] not in ['+', '-'] and t==-1:
+            t = s 
+        if s == -1 or t == -1:
+            return 0
+        res = int(str[s:t+1])
+        if res < -2**31:
+            return -2**31
+        if res > 2**31-1:
+            return 2**31-1
+        return res
+
+    def _isSymmetric(self, root):
+        if root == None: return True
+        pars = [root]
+        idxs = [0]
+        left = right = 0
+        while pars:
+            if idxs[0] != 0 and len(idxs)%2 == 1:
+                return False
+            l, r = 0, len(pars)-1
+            m = left + right
+            while l<r:
+                if pars[l].val != pars[r].val or idxs[l]+idxs[r] != m:
+                    return False
+                l += 1
+                r -= 1
+            tmp = []
+            tmp_idx = []
+            for n, i in zip(pars, idxs):
+                if n.left != None:
+                    tmp.append(n.left)
+                    tmp_idx.append((i<<1)+1)
+                if n.right != None:
+                    tmp.append(n.right)
+                    tmp_idx.append((i<<1)+2)
+            pars = tmp
+            idxs = tmp_idx
+            left = (left<<1) + 1
+            right = (right<<1) + 2
+        return True
             
             
 

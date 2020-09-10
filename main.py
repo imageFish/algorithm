@@ -7,10 +7,11 @@ from datetime import datetime
 from copy import deepcopy
 solve = Solution()
 
+a = solve.deserialize('[1,0]')
 start = datetime.now()
 
-res = solve.add(
-    3, -1
+res = solve._isSymmetric(
+    a
 )
 print(res)
 

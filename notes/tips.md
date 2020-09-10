@@ -42,4 +42,12 @@ while b != 0:
     s += (b&1) * a
     a << 1
     b >> 1
+
+# bit opts replace add, multi:
+def add(self, a, b):
+    x = 0xffffffff # there is no bit numbers in python saving INT, 
+    a, b = a & x, b & x # &x is get the comlitary code
+    while b!=0:
+        a, b = a^b, (a&b)<<1 & x 
+    return a if a <= 0x7fffffff else ~(a ^ x) # max positive int 0x7fffffff, if a number is greater then its, it is nagetive and need to ~ its bit flag.
 ```
