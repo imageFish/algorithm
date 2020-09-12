@@ -894,39 +894,143 @@ class Solution:
         return res
 
     def _isSymmetric(self, root):
-        if root == None: return True
-        pars = [root]
-        idxs = [0]
-        left = right = 0
-        while pars:
-            if idxs[0] != 0 and len(idxs)%2 == 1:
-                return False
-            l, r = 0, len(pars)-1
-            m = left + right
-            while l<r:
-                if pars[l].val != pars[r].val or idxs[l]+idxs[r] != m:
-                    return False
-                l += 1
-                r -= 1
-            tmp = []
-            tmp_idx = []
-            for n, i in zip(pars, idxs):
-                if n.left != None:
-                    tmp.append(n.left)
-                    tmp_idx.append((i<<1)+1)
-                if n.right != None:
-                    tmp.append(n.right)
-                    tmp_idx.append((i<<1)+2)
-            pars = tmp
-            idxs = tmp_idx
-            left = (left<<1) + 1
-            right = (right<<1) + 2
-        return True
-            
-            
+        def symetric(left, right):
+            if not left and not right: return True
+            if not left or not right: return False
+            if left.val != right.val: return False
+            return symetric(left.left, right.right) and symetric(left.right, right.left)
+        if not root: return True
+        return symetric(root.left, root.right)
+    
+    def hasPathSum(self, root, sum):
+        """
+        :type root: TreeNode
+        :type sum: int
+        :rtype: bool
+        """
+        if root == None or root.val > sum: return False
+        if root.val == sum: return True
+        return self.hasPathSum(root.left, sum-root.val) or self.hasPathSum(root.right, root.val-sum)
 
-            
+    def connect(self, root):
+        """
+        :type root: Node
+        :rtype: Node
+        """
+        if not root: return
+        l, r = root.left, root.right
+        self.connect(l)
+        self.connect(r)
+        while l :
+            _l = None
+            ln = l
+            if not _l: _l = ln.left
+            if not _l: _l = ln.right
+            while ln.next:
+                ln = ln.next
+                if not _l: _l = ln.left
+                if not _l: _l = ln.right
+            ln.next = r
+            l = _l
 
+            _r = None
+            while r:
+                if not _r:_r = r.left
+                else:break
+                if not _r:_r = r.right
+                else:break
+                r = r.next
+            r = _r
+        return root
+            
+    def findRedundantConnection(self, edges):
+        """
+        :type edges: List[List[int]]
+        :rtype: List[int]
+        """
+        n = max(edges[0])
+        for e in edges[1:]:
+            n = max(e[0], e[1], n)
+        uf = [i for i in range(n+1)]
+        for l, r in edges:
+            if l > r: l, r = r, l 
+            lp, rp = l, r
+            while lp != uf[lp]:
+                lp = uf[lp]
+            while rp != uf[rp]:
+                rp = uf[rp]
+            if lp == rp: res=[l, r]
+            else: uf[rp] = l
+        return res
+    def accountsMerge(self, accounts):
+        """
+        :type accounts: List[List[str]]
+        :rtype: List[List[str]]
+        """
+        uf = [i for i in range(len(accounts))]
+        mail2idx = {}
+        for i, acc in enumerate(accounts):
+            idxs = set()
+            for mail in acc[1:]:
+                if mail in mail2idx:
+                    idx = mail2idx[mail]
+                    while idx!=uf[idx]:
+                        idx=uf[idx]
+                    idxs.add(idx)
+                else:
+                    mail2idx[mail] = i
+            idxs.add(i)
+            idxs = list(idxs)
+            if len(idxs) > 1:
+                idxs.sort()
+                for i in range(len(idxs)-1, 0, -1):
+                    uf[idxs[i]] = idxs[i-1]
+        res = {}
+        used = [False]*len(uf)
+        for i in range(len(uf)-1, -1, -1):
+            if used[i]: continue
+            tmp = set()
+            while i!=uf[i]:
+                used[i] = True
+                for acc in accounts[i][1:]:
+                    tmp.add(acc)
+                i = uf[i]
+            used[i] = True
+            for acc in accounts[i][1:]:
+                tmp.add(acc)
+            name = accounts[i][0]
+            if i in res:
+                res[i][1].update(tmp)
+            else:
+                res[i] = [name, tmp]
+        tmp = []
+        for k,v in res.items():
+            mails = list(v[1])
+            mails.sort()
+            name = v[0]
+            tmp.append([name]+mails)
+        return tmp
+
+    def findRedundantDirectedConnection(self, edges):
+        n = max(edges[0])
+        for e in edges[1:]:
+            n = max(e[0], e[1], n)
+        uf = [[] for i in range(n+1)]
+        # for e in enumerate(edges):
+
+    def findCriticalAndPseudoCriticalEdges(self, n, edges):
+        """
+        :type n: int
+        :type edges: List[List[int]]
+        :rtype: List[List[int]]
+        """
+        def prim(n, edges):
+            uf = [i for i in range(n)]
+            for i,e in enumerate(edges):
+                e.append(i)
+            edges.sort(key=lambda x: x[2])
+            res = [[], []]
+            for i in 
 
 
 
@@ -936,6 +1040,7 @@ class TreeNode:
         self.val = x
         self.left = None
         self.right = None
+        self.next = None
 
 
 class CQueue:
@@ -962,3 +1067,60 @@ class CQueue:
         else:
             self.head += 1
         return res
+
+class Codec:
+
+    def serialize(self, root):
+        """Encodes a tree to a single string.
+        
+        :type root: TreeNode
+        :rtype: str
+        """
+        if not root: return '[]'
+        res = [str(root.val)]
+        pars = [root]
+        while pars:
+            tmp = []
+            _res = []
+            for p in pars:
+                if p.left:
+                    tmp.append(p.left)
+                    _res.append(str(p.left.val))
+                else:
+                    _res.append('null')
+                if p.right:
+                    tmp.append(p.right)
+                    _res.append(str(p.right.val))
+                else:
+                    _res.append('null')
+            pars = tmp
+            if len(tmp) > 0:
+                res.extend(_res)
+        return '[' + ','.join(res) + ']'
+        
+
+    def deserialize(self, data):
+        """Decodes your encoded data to tree.
+        
+        :type data: str
+        :rtype: TreeNode
+        """
+        if len(data) < 3: return None
+        data = [t for t in data[1:-1].split(',')]
+        if data[0]=='null': return None
+        root = TreeNode(int(data[0]))
+        pars = [root]
+        i = 1
+        while i < len(data):
+            tmp = []
+            for j in range(len(pars)):
+                if data[i] != 'null':
+                    pars[j].left = TreeNode(int(data[i]))
+                    tmp.append(pars[j].left)
+                i += 1
+                if data[i] != 'null':
+                    pars[j].right = TreeNode(int(data[i]))
+                    tmp.append(pars[j].right)
+                i += 1
+            pars = tmp
+        return root
