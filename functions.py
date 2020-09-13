@@ -1024,43 +1024,57 @@ class Solution:
         :type edges: List[List[int]]
         :rtype: List[List[int]]
         """
-        def prim(n, edges):
+        def _kruskal(n, edges, deleted_edge, e=None):
             uf = [i for i in range(n)]
+            i = 0
+            res = []
+            cost = 0
+            el = len(edges)
+            if e != None:
+                l, r = edges[e][:2]
+                uf[r] = l
+                res.append(e)
+                cost += edges[e][2]
+            while i < el:
+                if deleted_edge[i]:
+                    i += 1
+                    continue
+                l, r = edges[i][0:2]
+                while l!=uf[l]: l=uf[l]
+                while r!=uf[r]: r=uf[r]
+                if l==r:
+                    i += 1
+                    continue
+                uf[r] = l
+                res.append(i)
+                cost += edges[i][2]
+            return res, cost
+
+        def kruskal(n, edges):
             for i,e in enumerate(edges):
                 e.append(i)
             edges.sort(key=lambda x: x[2])
             res = [[], []] # 0: critical 1: secondary
             el = len(edges)
-            used = [0]*el
-            i = 0
-            while i < el:
-                il, ir = edges[i][0:2]
-                while uf[il]!=il: il=uf[il]
-                while uf[ir]!=ir: ir=uf[ir]
-                if il == ir:
-                    i += 1
-                    continue
-                if il > ir:
-                    il, ir = ir, il
-                j = i+1
-                tmp = [i]
-                while j<el and edges[i][2] == edges[j][2]:
-                    _l, _r = edges[j][0:2]
-                    while uf[_l]!=_l: _l=uf[_l]
-                    while uf[_r]!=_r: _r=uf[_r]
-                    if _l > _r: _l, _r = _r, _l
-                    if _l==il and _r==ir: tmp.append(j)
-                    j += 1
-                if len(tmp) == 1:
-                    res[0].extend(tmp)
+            deleted_edge = [False]*el
+            e_idxs, cost = _kruskal(n, edges, deleted_edge)
+            edge_set = set()
+            edge_set.update(e_idxs)
+            for ei in range(el):
+                deleted_edge[ei] = True
+                _eis, _cost = _kruskal(n, edges, deleted_edge)
+                if len(e_idxs) != len(_eis) or cost < _cost:
+                    edge_set.update(_eis)
+                    res[0].append(edges[ei][3])
                 else:
-                    res[1].extend(tmp)
-                uf[ir] = il
-                i = tmp[-1]+1
+                    _eis, _cost = _kruskal(n, edges, deleted_edge, e=ei)
+                    if len(e_idxs) == len(_eis) and cost == _cost:
+                        res[1].append(edges[ei][3])
+                deleted_edge[ei] = False
             return res
-        return prim(n, edges)
+        return kruskal(n, edges)
 
-
+    
 
 
 class TreeNode:
