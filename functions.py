@@ -1029,8 +1029,36 @@ class Solution:
             for i,e in enumerate(edges):
                 e.append(i)
             edges.sort(key=lambda x: x[2])
-            res = [[], []]
-            for i in 
+            res = [[], []] # 0: critical 1: secondary
+            el = len(edges)
+            used = [0]*el
+            i = 0
+            while i < el:
+                il, ir = edges[i][0:2]
+                while uf[il]!=il: il=uf[il]
+                while uf[ir]!=ir: ir=uf[ir]
+                if il == ir:
+                    i += 1
+                    continue
+                if il > ir:
+                    il, ir = ir, il
+                j = i+1
+                tmp = [i]
+                while j<el and edges[i][2] == edges[j][2]:
+                    _l, _r = edges[j][0:2]
+                    while uf[_l]!=_l: _l=uf[_l]
+                    while uf[_r]!=_r: _r=uf[_r]
+                    if _l > _r: _l, _r = _r, _l
+                    if _l==il and _r==ir: tmp.append(j)
+                    j += 1
+                if len(tmp) == 1:
+                    res[0].extend(tmp)
+                else:
+                    res[1].extend(tmp)
+                uf[ir] = il
+                i = tmp[-1]+1
+            return res
+        return prim(n, edges)
 
 
 

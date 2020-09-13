@@ -13,8 +13,8 @@ start = datetime.now()
 # codec = Codec()
 # res = codec.deserialize(codec.serialize(a))
 
-res = solve.accountsMerge(
-    [["David","David0@m.co","David4@m.co","David3@m.co"],["David","David5@m.co","David5@m.co","David0@m.co"],["David","David1@m.co","David4@m.co","David0@m.co"],["David","David0@m.co","David1@m.co","David3@m.co"],["David","David4@m.co","David1@m.co","David3@m.co"]]
+res = solve.findCriticalAndPseudoCriticalEdges(
+    n = 5, edges = [[0,1,1],[1,2,1],[2,3,2],[0,3,2],[0,4,3],[3,4,3],[1,4,6]]
 )
 print(res)
 
