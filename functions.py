@@ -1074,7 +1074,22 @@ class Solution:
             return res
         return kruskal(n, edges)
 
-    
+    def nextPermutation(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: None Do not return anything, modify nums in-place instead.
+        """
+        nl = len(nums)
+        i = nl-1
+        while i>0:
+            if nums[i-1] < nums[i]: break
+            i -= 1
+        if i == 0: return nums[::-1]
+        for j in range(nl-1, i-1, -1):
+            if nums[i-1] < nums[j]: break
+        nums[i-1], nums[j] = nums[j], nums[i-1]
+        nums[i:] = nums[i:][::-1]
+        return nums
 
 
 class TreeNode:
