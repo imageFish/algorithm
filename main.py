@@ -13,8 +13,8 @@ start = datetime.now()
 # codec = Codec()
 # res = codec.deserialize(codec.serialize(a))
 
-res = solve.nextPermutation(
-    [3,2,1]
+res = solve.containsNearbyAlmostDuplicate(
+    [10, 9, 8, 7, 6, 5, 4, -10, 1,5,9,1,5,9], 4, 0
 )
 print(res)
 

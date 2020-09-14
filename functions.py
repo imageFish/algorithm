@@ -1074,22 +1074,42 @@ class Solution:
             return res
         return kruskal(n, edges)
 
-    def nextPermutation(self, nums):
+    def containsNearbyAlmostDuplicate(self, nums, k, t):
         """
         :type nums: List[int]
-        :rtype: None Do not return anything, modify nums in-place instead.
+        :type k: int
+        :type t: int
+        :rtype: bool
         """
-        nl = len(nums)
-        i = nl-1
-        while i>0:
-            if nums[i-1] < nums[i]: break
-            i -= 1
-        if i == 0: return nums[::-1]
-        for j in range(nl-1, i-1, -1):
-            if nums[i-1] < nums[j]: break
-        nums[i-1], nums[j] = nums[j], nums[i-1]
-        nums[i:] = nums[i:][::-1]
-        return nums
+        if t < 0 or not k or not nums:
+            return False
+
+        if k == 1:
+            for i in range(len(nums)-1):
+                if abs(nums[i]-nums[i+1]) <= t:
+                    return True
+            return False
+
+        # if not t:
+        #     dct = {}
+        #     for inx, i in enumerate(nums):
+        #         if i in dct:
+        #             if inx-dct[i] <= k:
+        #                 return True
+        #         dct[i] = inx
+        #     return False
+
+        lst = []
+        i = nums[0]
+        lst.append(sum([(i-j, i+j) for j in range(t+1)], ()))
+
+        for i in nums[1:]:
+            if i in set(sum(lst, ())):
+                return True
+            lst.append(sum([(i-j, i+j) for j in range(t+1)], ()))
+            lst = lst[-k:]
+
+        return False
 
 
 class TreeNode:
