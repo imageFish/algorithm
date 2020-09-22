@@ -74,5 +74,66 @@ def cal(n, m):
                         equ = [t] + equ[3:]
                 if equ[0] == m: return 1
     return 0
-print(cal(1, 4))
-print(cal(1, 3))
+
+
+def maze():
+    import sys
+    sys.stdin = open('input.txt', 'r')
+    t = int(sys.stdin.readline().strip())
+    for _ in range(t):
+        n, m = [int(t) for t in sys.stdin.readline().strip().split()]
+        costs = []
+        used = []
+        arr = []
+        si = sj = None
+        for _ in range(n):
+            costs.append([-1]*m)
+            used.append([False]*m)
+            arr.append(sys.stdin.readline().strip())
+            if not si:
+                for i in range(m):
+                    if arr[-1][i] == '@':
+                        si, sj = len(arr)-1, i
+                        break
+        que1 = [[si, sj]]
+        costs[si][sj] = 0
+        used[si][sj] = True
+
+        def dfs(i, j, c):
+            costs[i][j] = c
+            res = []
+            for _i, _j in [[-1, 0], [1, 0], [0, 1], [0, -1]]:
+                _i += i
+                _j += j
+                if _i<0 or _i>=n or _j<0 or _j>=m:
+                    return False
+                elif used[_i][_j]:
+                    continue
+                used[_i][_j] = True
+                if arr[_i][_j]=='.':
+                    tmp = dfs(_i, _j, c) 
+                    if tmp == False:
+                        return False
+                    res.extend(tmp)
+                elif arr[_i][_j]=='*':
+                    res.append([_i, _j])
+            return res
+            
+        res = 0
+        flag = False
+        while que1:
+            que2 = []
+            while que1:
+                i, j = que1.pop()
+                tmp = dfs(i, j, res)
+                if tmp == False:
+                    flag = True
+                    print(res)
+                    break
+                que2.extend(tmp)
+            if flag: break
+            res += 1
+            que1 = que2
+        if flag: continue
+        print(-1)
+maze()
