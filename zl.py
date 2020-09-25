@@ -118,7 +118,7 @@ def maze():
                 elif arr[_i][_j]=='*':
                     res.append([_i, _j])
             return res
-            
+
         res = 0
         flag = False
         while que1:
@@ -136,4 +136,80 @@ def maze():
             que1 = que2
         if flag: continue
         print(-1)
-maze()
+
+def card():
+    import sys
+    sys.stdin = open('input.txt', 'r')
+    n = int(sys.stdin.readline().strip())
+    s = sys.stdin.readline().strip().split()
+    
+    sc = {} # tonghua
+    cnt = {}
+    nums = []
+    for c in s:
+        num = c[1]
+        if num=='A': num=1
+        elif 'J'==num: num=11
+        elif 'Q'==num: num=12
+        elif 'K'==num: num=13
+        else: num = int(c[1:])
+        if c[0] in sc:
+            sc[c[0]].append(num)
+        else:
+            sc[c[0]] = [num]
+        if num==1:
+            sc[c[0]].append(14)
+            nums.append(14)
+        if num in cnt:
+            cnt[num] += 1
+        else:
+            cnt[num] = 1
+        nums.append(num)
+
+    def shunzi(nums):
+        nums = sorted(list(set(nums)))
+        if len(nums) < 5: return False, False
+        flag = False
+        for i in range(len(nums)-1, 3, -1):
+            if nums[i]-nums[i-4] == 4:
+                if nums[i]==14: flag=True
+                return True, flag
+        return False, flag
+    for k,v in sc.items():
+        yn, flag = shunzi(v)
+        if yn and flag: return 'HuangJiaTongHuaShun'
+        if yn: return 'TongHuaShun'
+    
+
+    for k,v in cnt.items():
+        if v>=4: return 'SiTiao'
+    
+    thr, two, one = [], [], []
+    for k,v in cnt.items():
+        if v>=3:
+            thr.append(k)
+            continue
+        if v>=2:
+            two.append(k)
+            continue
+        if v>=1:
+            one.append(k)
+            continue
+    if len(thr)>=2 or (len(thr)==1 and len(two)>=1):
+        return 'HuLu'
+    
+    for k,v in sc.items():
+        if len(v)>=5:
+            return 'TongHua'
+    if shunzi(nums)[0]:
+        return 'ShunZi'
+    
+    if len(thr)>=1 and len(one)+len(two)>=2:
+        return 'SanTiao'
+    if len(thr)+len(two)>=2:
+        return 'LiangDui'
+    if len(thr)+len(two)>=1:
+        return 'YiDui'
+    return 'GaoPai'
+
+print(card())
