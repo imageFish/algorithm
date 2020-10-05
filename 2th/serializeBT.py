@@ -411,67 +411,455 @@ class Solution:
             stack.append(n)
         return True
 
-
-        import sys
-        max_int = sys.maxsize
-        bt_n = 1
-        pl = len(postorder)
-        while bt_n<pl: bt_n<<=1
-        bt = [] # [max, min]
-        for i in range(bt_n*2-1):
-            bt.append([-max_int, max_int])
-        def update(i, k):
-            i += bt_n-1
-            bt[i][0] = bt[i][1] = k
-            while i>0:
-                i = (i-1) >> 1
-                l = (i<<1) + 1
-                r = l + 1
-                bt[i][0] = max(bt[l][0], bt[r][0])
-                bt[i][1] = min(bt[l][1], bt[r][1])
-        def query(a, b, i, l, r):
-            if a<=l and r<=b:
-                return bt[i]
-            if r<=a or l>=b:
-                return -max_int, max_int
-            lre = query(a, b, 2*i+1, l, (l+r)>>1)
-            rre = query(a, b, 2*i+2, (l+r)>>1, r)
-            return max(lre[0], rre[0]), min(lre[1], rre[1])
-        for i,t in enumerate(postorder):
-            update(i, t)
-        def dfs(l, r):
-            if r<=l:
-                return True
-            for ln in range(r-l+1):
-                if ln==0:
-                    lmx = -max_int
+    @classmethod
+    def lengthOfLIS(self, nums):
+        """
+        :type nums: List[int]
+        :rtype: int
+        """
+        lis = [0] * len(nums)
+        res = len(nums) - 1
+        def bs(k):
+            l, r = res, len(lis)-1
+            while l < r:
+                m = (l+r+1) >> 1
+                if lis[m] <= k:
+                    r = m - 1
                 else:
-                    lmx = query(l, l+ln, 0, 0, bt_n)[0]
-                if ln==r-l:
-                    rmn = max_int
-                else:
-                    rmn = query(l+ln, r, 0, 0, bt_n)[1]
-                if lmx<postorder[r] and postorder[r]<rmn and dfs(l, l+ln-1) and dfs(l+ln, r-1):
-                    return True
-            return False
-        res = dfs(0, len(postorder)-1)
+                    l = m
+            return r
+        for k in nums:
+            idx = bs(k)
+            lis[idx] = k
+            if idx == res:
+                res -= 1
+        rres = len(nums)-1-res
+        print(rres)
+    
+    @classmethod
+    def solveNQueens(self, n):
+        """
+        :type n: int
+        :rtype: List[List[str]]
+        """
+        from copy import deepcopy
+        used = []
+        res = []
+        for _ in range(n):
+            used.append([0]*n)
+        
+        def label(i, j, lab):
+            for k in range(1, n):
+                flag = False
+                _i = i + k
+                if _i < n: 
+                    used[_i][j] += lab 
+                    flag = True
+                    _j = j + k
+                    if _j < n: used[_i][_j] += lab
+                    _j = j - k
+                    if _j >= 0: used[_i][_j] += lab
+                _i = i - k
+                if _i >= 0: 
+                    used[_i][j] += lab
+                    flag = True
+                    _j = j + k
+                    if _j < n: used[_i][_j] += lab
+                    _j = j - k
+                    if _j >= 0: used[_i][_j] += lab
+                if not flag:
+                    break
+        def dfs(i, _res):
+            if i == n:
+                tmp = [t for t in _res.split(',') if len(t)!=0]
+                res.append(tmp)
+                return
+            for j in range(n):
+                if used[i][j] > 0:
+                    continue
+                label(i, j, 1)
+                tmp = ['.']*n
+                tmp[j] = 'Q'
+                dfs(i+1, _res+','+''.join(tmp))
+                label(i, j, -1)
+        dfs(0, '')
+        return res
+    
+    @classmethod
+    def totalNQueens(self, n):
+        """
+        :type n: int
+        :rtype: int
+        """
+        from copy import deepcopy
+        used = []
+        res = 0
+        for _ in range(n):
+            used.append([0]*n)
+        
+        def label(i, j, lab):
+            for k in range(1, n):
+                flag = False
+                _i = i + k
+                if _i < n: 
+                    used[_i][j] += lab 
+                    flag = True
+                    _j = j + k
+                    if _j < n: used[_i][_j] += lab
+                    _j = j - k
+                    if _j >= 0: used[_i][_j] += lab
+                _i = i - k
+                if _i >= 0: 
+                    used[_i][j] += lab
+                    flag = True
+                    _j = j + k
+                    if _j < n: used[_i][_j] += lab
+                    _j = j - k
+                    if _j >= 0: used[_i][_j] += lab
+                if not flag:
+                    break
+        def dfs(i):
+            if i == n:
+                nonlocal res
+                res += 1
+                return
+            for j in range(n):
+                if used[i][j] > 0:
+                    continue
+                label(i, j, 1)
+                dfs(i+1)
+                label(i, j, -1)
+        dfs(0)
         return res
 
 
+    @classmethod
+    def findMinStep(self, board, hand):
+        """
+        :type board: str
+        :type hand: str
+        :rtype: int
+        """
+        def eliminate(s):
+            mn = len(s)
+            for i in range(len(s)):
+                j = i
+                while j<len(s) and s[j]==s[i]:
+                    j += 1
+                if j-i >= 3:
+                    tmp = s[:i] + s[j:]
+                    _mn = eliminate(tmp)
+                    mn = min(mn, _mn)
+            return mn
+        def dfs(board, hand):
+            mx = -1e10
+            i = 0
+            while i < len(board):
+                j = i
+                while j<len(board) and board[j]==board[i]:
+                    j += 1
+                z = j-i
+                if z >= 3:
+                    i = j
+                    continue
+                t = 3 - z
+                c = board[i]
+                if hand[c] >= t:
+                    hand[c] -= t
+                    # tmp = eliminate(board[:i] + c*t + board[i:])
+                    tmp = board[:i] + board[j:]
+                    left_len = eliminate(tmp)
+                    if left_len==0:
+                        _mx = sum(hand.values())
+                    else:
+                        _mx = dfs(tmp, hand)
+                    mx = max(_mx, mx)
+                    hand[c] += t
+                i = j
+            return mx
+        _hand = {'Y':0, 'W':0, 'R':0, 'B':0, 'G':0}
+        for c in hand:
+            _hand[c] += 1
+        res = dfs(board, _hand)
+        if res == -1e10:
+            res = -1
+        else:
+            res = len(hand) - res
+        return res
+    
+    @classmethod
+    def findTheLongestSubstring(self, s):
+        sl = len(s)
+        pre = {}
+        pre[0] = -1
+        cur = 0
+        res = -1
+        for i, c in enumerate(s):
+            if c == 'a':
+                cur ^= 1
+            elif c == 'e':
+                cur ^= 2
+            elif c == 'i':
+                cur ^= 4
+            elif c == 'o':
+                cur ^= 8
+            elif c == 'u':
+                cur ^= 16
+            if cur not in pre:
+                pre[cur] = i
+            else:
+                res = max(res, i-pre[cur])
+        return res
+
+    @classmethod
+    def minimumOperations(self, leaves):
+        """
+        :type leaves: str
+        :rtype: int
+        """
+        ll = len(leaves)
+        d0 = 0 if leaves[0]=='r' else 1
+        d1 = d2 = ll
+        for i in range(1, ll):
+            _d0 = d0 if leaves[i]=='r' else d0+1
+            _d1 = min(d0, d1)
+            if leaves[i]!='y':
+                _d1 += 1
+            _d2 = min(d1, d2)
+            if leaves[i]!='r':
+                _d2 += 1
+            d0, d1, d2 = _d0, _d1, _d2
+        return d2
+    
+    @classmethod
+    def multiply(self, num1, num2):
+        # num1, num2 = num1[::-1], num2[::-1]
+        num1 = [int(t) for t in num1]
+        num2 = [int(t) for t in num2]
+        l1, l2 = len(num1), len(num2)
+        res = [0] * (l1+l2)
+        for i in range(l1-1, -1, -1):
+            for j in range(l2-1, -1, -1):
+                a, b = num1[i], num2[j]
+                t = a * b + res[i+j+1]
+                t0 = t % 10
+                t1 = t // 10
+                res[i+j+1] = t0
+                res[i+j] += t1
+        i = 0
+        while i < l1+l2-1 and res[i]==0:
+            i += 1
+        res = ''.join([str(t) for t in res[i:]])
+        return res
+    
+    @classmethod
+    def restoreIpAddresses(self, s):
+        res = []
+        l = len(s)
+        t = 0
+        for i in range(1, 4):
+            t0 = t + i
+            if (t0>l) or (s[t]=='0' and i>1):
+                break
+            a0 = int(s[t:t0])
+            if not (0<=a0 and a0<=255):
+                break
+            for j in range(1, 4):
+                t1 = t0 + j
+                if (t1>l) or (s[t0]=='0' and j>1):
+                    break
+                a1 = int(s[t0:t1])
+                if not (0<=a1 and a1<=255):
+                    break
+                for k in range(1, 4):
+                    t2 = t1 + k
+                    if (t2>=l) or (s[t1]=='0' and k>1):
+                        break
+                    a2 = int(s[t1:t2])
+                    if not (0<=a2 and a2<=255):
+                        break
+                    if s[t2]=='0' and t2!=l-1:
+                        continue
+                    a3 = int(s[t2:])
+                    if not(0<=a3 and a3<=255):
+                        continue
+                    res.append([a0, a1, a2, a3])
+        res = ['.'.join([str(t) for t in i]) for i in res]
+        return res
+
+    @classmethod
+    def minJump(self, jump):
+        def dp():
+            res = n = len(jump)
+            f = [n]*n
+            f[0] = 0
+            mx_dis = [0]*n
+            mx_step = 0
+            for i in range(n):
+                if i > mx_dis[mx_step]:
+                    mx_step += 1
+                f[i] = min(f[i], mx_step+1)
+                tmp = i + jump[i]
+                if tmp >= n:
+                    res = min(res, f[i]+1)
+                else:
+                    f[tmp] = min(f[tmp], f[i]+1)
+                    mx_dis[f[i]+1] = max(mx_dis[f[i]+1], tmp)
+            return res
+        def bfs():
+            n = len(jump)
+            visited = [False]*n
+            visited[0] = True
+            stack = [0] # visited idxs
+            res = 0
+            left = 1
+            while stack:
+                _stack = []
+                res += 1
+                for idx in stack:
+                    tmp = idx + jump[idx]
+                    if tmp >= n:
+                        return res
+                    if not visited[tmp]:
+                        visited[tmp] = True
+                        _stack.append(tmp)
+                    for j in range(left, idx):
+                        if not visited[j]:
+                            visited[j] = True
+                            _stack.append(j)
+                    left = max(left, idx+1) # it's possible that left is greater than idx
+                stack = _stack
+            return -1
+
+        return bfs()
+
+    @classmethod
+    def fourSum(self, nums, target):
+        sums = []
+        nl = len(nums)
+        for i in range(nl):
+            for j in range(i+1, nl):
+                sums.append([nums[i]+nums[j], i, j])
+        sums.sort()
+        def bs(t, l=0, r=len(sums)):
+            while l < r:
+                m = (l+r) >> 1
+                if sums[m][0] >= t:
+                    r = m
+                else:
+                    l = m + 1
+            return l
+        res = []
+        res_set = set()
+        for s0_i, s0 in enumerate(sums):
+            s1 = target - s0[0]
+            idx = bs(s1, l=s0_i+1)
+            j = idx
+            while j<len(sums) and sums[j][0]==s1:
+                tmp = [s0[1], s0[2], sums[j][1], sums[j][2]]
+                if len(set(tmp)) == len(tmp):
+                    tmp = [nums[t] for t in tmp]
+                    tmp.sort()
+                    k = '_'.join([str(t) for t in tmp])
+                    if k not in res_set:
+                        res.append(tmp)
+                        res_set.add(k)
+                j += 1
+        return res
+
+    @classmethod
+    def threeSum(self, nums):
+        nl = len(nums)
+        nums.sort()
+        res = []
+        i = 0
+        while i < nl:
+            while i>0 and i<nl and nums[i]==nums[i-1]:
+                i += 1
+            l, r = i+1, nl-1
+            while l < r:
+                while l>i+1 and l<r and nums[l]==nums[l-1]:
+                    l += 1
+                while r > l and nums[l]+nums[r]>-nums[i]:
+                    r -= 1
+                if r==l: break
+                if nums[l]+nums[r] == -nums[i]:
+                    res.append([nums[i], nums
+                    [l], nums[r]])
+                l += 1
+            i += 1
+        return res
+
+    @classmethod
+    def search(self, nums, target):
+        nl = len(nums)
+        if nums[-1] < nums[0]:
+            l, r = 0, nl-1
+            while r-l>1:
+                m = (l+r) >> 1
+                if nums[m] > nums[l]:
+                    l = m
+                else:
+                    r = m
+            nums = nums[r:] + nums[:r]
+            idx = r
+        else:
+            idx = 0
+        l, r = 0, nl
+        while l < r:
+            m = (l+r) >> 1
+            if nums[m] >= target:
+                r = m
+            else:
+                l = m + 1
+        if l!=nl and nums[l]==target:
+            if l >= nl-idx:
+                l -= nl-idx
+            else:
+                l += idx
+            return l
+        return -1
+    
+    @classmethod
+    def findKthLargest(self, nums, k):
+        import heapq
+        res = heapq.nlargest(k, nums)
+        return res[-1]
+
+        arr = [nums[i] for i in range(k)]
+        heapq.heapify(arr)
+        for t in nums[k:]:
+            if t > arr[0]:
+                heapq.heappop(arr)
+                heapq.heappush(arr, t)
+        return arr[0]
+
+    @classmethod
+    def getPermutation(self, n, k):
+        arr = [i+1 for i in range(n)]
+        jc = [1]
+        for i in range(1, n-1):
+            jc.append(jc[-1]*(i+1))
+        jc = jc[::-1]
+        for i in range(n-1):
+            p, m = k//jc[i], k%jc[i]
+            if m==0:
+                p -= 1
+            arr[i], arr[p+i] = arr[p+i], arr[i]
+            arr[i+1:] = sorted(arr[i+1:])
+            if m==0:
+                k = jc[i]
+            else:
+                k = m
+        return ''.join([str(t) for t in arr])
             
-
-
-
-
-
-
 
 a = [3,4,5,1,2]
 b = [4, 1]
 a = Codec.deserialize(a)
 b = Codec.deserialize(b)
 a = '(()'
-res = Solution.verifyPostorder([1,3,2,6,5])
+res = Solution.getPermutation(3, 5)
 print(res)
 
 opts = ["MedianFinder","addNum","addNum","findMedian","addNum","findMedian"]

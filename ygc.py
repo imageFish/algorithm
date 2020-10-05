@@ -42,9 +42,26 @@ def element():
         return s_left
     else:
         return -1
-print(element())
 
-
+def least_boat():
+    import sys
+    # sys.stdin = open('input.txt', 'r')
+    n, c = [int(t) for t in sys.stdin.readline().strip().split()]
+    arr = [int(t) for t in sys.stdin.readline().strip().split()]
+    arr.sort()
+    l, r = 0, n-1
+    res = 0
+    while l<r:
+        if arr[l]+arr[r] <= c:
+            l += 1
+            r -= 1
+        else:
+            r -= 1
+        res += 1
+    if l==r:
+        res += 1
+    return res
+least_boat()
 
 
 
