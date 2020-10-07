@@ -852,14 +852,99 @@ class Solution:
             else:
                 k = m
         return ''.join([str(t) for t in arr])
-            
+    
+    @classmethod
+    def sortColors(self, nums):
+        nl = len(nums)
+        l, r = 0, nl-1
+        while True:
+            while l<r and nums[l]==0:
+                l += 1
+            while l<r and nums[r]!=0:
+                r -= 1
+            if l >= r:
+                break
+            nums[l], nums[r] = nums[r], nums[l]
+        r = nl - 1
+        while True:
+            while l<r and nums[l]==1:
+                l += 1
+            while l<r and nums[r]!=1:
+                r -= 1
+            if l >= r:
+                break
+            nums[l], nums[r] = nums[r], nums[l]
+        print(nums)
+    
+    @classmethod
+    def findCircleNum(self, M):
+        ml = len(M)
+        uf = [i for i in range(ml)]
+        for i in range(ml):
+            for j in range(i+1, ml):
+                if M[i][j]==1:
+                    jp = j
+                    while uf[jp] != jp:
+                        jp = uf[jp]
+                    ip = i
+                    while uf[ip] != ip:
+                        ip = uf[ip]
+                    if jp != ip:
+                        uf[jp] = ip
+        visited = [False]*ml
+        res = 0
+        for i in range(ml-1, -1, -1):
+            flag = False
+            while uf[i] != i:
+                if visited[i]:
+                    flag = True
+                    break
+                visited[i] = True
+                i = uf[i]
+            if flag or visited[i]:
+                continue
+            visited[i] = True
+            res += 1
+        return res
+
+    @classmethod
+    def merge(self, intervals):
+        intervals.sort()
+        res = []
+        il = len(intervals)
+        i = 0
+        while i < il:
+            tmp = [intervals[i][0], intervals[i][1]]
+            while i<il and tmp[1]>=intervals[i][0]:
+                tmp[0] = min(tmp[0], intervals[i][0])
+                tmp[1] = max(tmp[1], intervals[i][1])
+                i += 1
+            res.append(tmp)
+        return res
+
+    @classmethod
+    def trap(self, height):
+        hl = len(height)
+        mx = mx_idx = -1
+        for i in range(hl):
+            if height[i] >= mx:
+                mx_idx = i
+        i = 0
+        res = 0
+        while i < mx_idx:
+            j = i
+            while j<=mx_idx and height[j] <= height[i]:
+                res += height[i] - height[j]
+                j += 1
+            i = j
+        return res
 
 a = [3,4,5,1,2]
 b = [4, 1]
 a = Codec.deserialize(a)
 b = Codec.deserialize(b)
 a = '(()'
-res = Solution.getPermutation(3, 5)
+res = Solution.trap([0,1,0,2,1,0,1,3,2,1,2,1])
 print(res)
 
 opts = ["MedianFinder","addNum","addNum","findMedian","addNum","findMedian"]
