@@ -929,6 +929,7 @@ class Solution:
         for i in range(hl):
             if height[i] >= mx:
                 mx_idx = i
+                mx = height[i]
         i = 0
         res = 0
         while i < mx_idx:
@@ -936,6 +937,13 @@ class Solution:
             while j<=mx_idx and height[j] <= height[i]:
                 res += height[i] - height[j]
                 j += 1
+            i = j
+        i = hl - 1
+        while i > mx_idx:
+            j = i
+            while j >= mx_idx and height[j] <= height[i]:
+                res += height[i] - height[j]
+                j -= 1
             i = j
         return res
 

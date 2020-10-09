@@ -21,3 +21,11 @@ $$
 AUC = \frac{\sum PositiveRank - M(1+M)/2}{M*N}
 $$
 注：排序好之后正样本i的对数，$rank-1-(M_i-1)$其中$M_i$为正样本i在所有正样本中的排序，FPR与TPR好像不能直接比较，但是实际上已经把他当成了在预测中正确和错误的比例
+
+## tf-idf
+$$
+\text{TF-IDF}_w = tf * idf\\
+idf_w = \log_{10} \frac{|D|}{|D_w|}\\
+tf_w = \frac{\text{NUM}_w}{\text{NUM}_{AllWord}}
+$$
+idf为所有文档除以包含该单词的文档对10的对数，tf是该单词的词频
