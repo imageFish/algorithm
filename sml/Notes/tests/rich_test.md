@@ -35,19 +35,29 @@ classes = ['A', 'B', 'C']
 df_class = pd.DataFrame({'name': name, 'class': [random.choice(classes) for _ in range(100)]})
 df_class = df_class.sample(frac=1).reset_index(drop=True)
 df_class.head()
-#%% md
+
+##%% md
 # 题目 1： 按照名字合并分数和班级
-#%%
+##%%
+df_all = pd.merge(df_score, df_class, on='name')
+print(df_all)
+##%% md
 
-#%% md
 # 题目 2： 取出 A 班的成绩表，按照分数降序排序
-#%%
+##%%
+df_A_score = df_all.loc[df_all['class']=='A']
+df_A_score.sort_values(by='score', inplace=True, ascending=False)
+print(df_A_score)
+##%% md
 
-#%% md
 # 题目 3： 计算 A、B、C 班的平均分
-#%%
-
-#%%
+##%%
+res = [] # 一次为A、B、C三班的平均值
+for c in classes:
+    res.append(df_all.loc[df_all['class']==c]['score'].mean())
+print(res)
+print('done')
+##%%
 ```
 3. 编写正则表达式，搜索一句话里的所有微信号。
 

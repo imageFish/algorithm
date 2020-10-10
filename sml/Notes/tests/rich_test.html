@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>一、Python</title>
+        <style>
+</style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        
+    </head>
+    <body class="vscode-light">
+        <h2 id="一python">一、Python</h2>
+<ol>
+<li>写一个动物类（Animal），初始化函数输入名称（name），分类（category），类型均为字符串，再写一个狗类（Dog）继承动物类，初始化函数输入名称（name），分类（category）和颜色（color）。</li>
+</ol>
+<pre><code class="language-python"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Animal</span><span class="hljs-params">()</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, name, category)</span>:</span>
+        self.name = name
+        self.category = category
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Dog</span><span class="hljs-params">(Animal)</span>:</span>
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, name, category, color)</span>:</span>
+        super().__init__(name, category)
+        self.color = color
+</div></code></pre>
+<ol start="2">
+<li>DataFrame</li>
+</ol>
+<pre><code class="language-python"><div><span class="hljs-comment">#%%</span>
+<span class="hljs-keyword">import</span> string
+<span class="hljs-keyword">import</span> random
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+<span class="hljs-keyword">import</span> pandas <span class="hljs-keyword">as</span> pd
+<span class="hljs-comment">#%% md</span>
+<span class="hljs-comment"># 随机生成一些名字和分数</span>
+<span class="hljs-comment">#%%</span>
+name = set()
+<span class="hljs-keyword">while</span> len(name) &lt; <span class="hljs-number">100</span>:
+    name.add(<span class="hljs-string">''</span>.join(random.choice(string.ascii_lowercase) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> range(<span class="hljs-number">5</span>)))
+name = list(name)
+
+df_score = pd.DataFrame({<span class="hljs-string">'name'</span>: name, <span class="hljs-string">'score'</span>: np.random.randint(<span class="hljs-number">80</span>, <span class="hljs-number">100</span>, <span class="hljs-number">100</span>)})
+df_score.head()
+<span class="hljs-comment">#%% md</span>
+<span class="hljs-comment"># 给随机名字分配班级</span>
+<span class="hljs-comment">#%%</span>
+classes = [<span class="hljs-string">'A'</span>, <span class="hljs-string">'B'</span>, <span class="hljs-string">'C'</span>]
+df_class = pd.DataFrame({<span class="hljs-string">'name'</span>: name, <span class="hljs-string">'class'</span>: [random.choice(classes) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> range(<span class="hljs-number">100</span>)]})
+df_class = df_class.sample(frac=<span class="hljs-number">1</span>).reset_index(drop=<span class="hljs-literal">True</span>)
+df_class.head()
+
+<span class="hljs-comment">##%% md</span>
+<span class="hljs-comment"># 题目 1： 按照名字合并分数和班级</span>
+<span class="hljs-comment">##%%</span>
+df_all = pd.merge(df_score, df_class, on=<span class="hljs-string">'name'</span>)
+print(df_all)
+<span class="hljs-comment">##%% md</span>
+
+<span class="hljs-comment"># 题目 2： 取出 A 班的成绩表，按照分数降序排序</span>
+<span class="hljs-comment">##%%</span>
+df_A_score = df_all.loc[df_all[<span class="hljs-string">'class'</span>]==<span class="hljs-string">'A'</span>]
+df_A_score.sort_values(by=<span class="hljs-string">'score'</span>, inplace=<span class="hljs-literal">True</span>, ascending=<span class="hljs-literal">False</span>)
+print(df_A_score)
+<span class="hljs-comment">##%% md</span>
+
+<span class="hljs-comment"># 题目 3： 计算 A、B、C 班的平均分</span>
+<span class="hljs-comment">##%%</span>
+res = [] <span class="hljs-comment"># 一次为A、B、C三班的平均值</span>
+<span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> classes:
+    res.append(df_all.loc[df_all[<span class="hljs-string">'class'</span>]==c][<span class="hljs-string">'score'</span>].mean())
+print(res)
+print(<span class="hljs-string">'done'</span>)
+<span class="hljs-comment">##%%</span>
+</div></code></pre>
+<ol start="3">
+<li>编写正则表达式，搜索一句话里的所有微信号。</li>
+</ol>
+<p>比如：</p>
+<pre><code>对方在 “团购1群”中加我好友，他的微信号是wxid_12345，昵称”xyz”，我的微信号 “lz1234”，名字叫“石头”。
+</code></pre>
+<p>期望输出：['wxid_12345', 'lz1234']</p>
+<p>加分输出：[{'start': 22, 'end': 32, 'value': 'wxid_12345', 'type': '微信号'},
+{'start': 48, 'end': 54, 'value': 'lz1234', 'type': '微信号'}]</p>
+<pre><code class="language-python"><div><span class="hljs-keyword">import</span> re
+s = <span class="hljs-string">'对方在 “团购1群”中加我好友，他的微信号是wxid_12345，昵称”xyz”，我的微信号 “lz1234”，名字叫“石头”。'</span>
+wxh = re.compile(<span class="hljs-string">r'微信号'</span>)
+wxid = re.compile(<span class="hljs-string">r'[0-9a-zA-Z_]+'</span>)
+re_wxh = [i.span() <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> wxh.finditer(s)]
+re_wxid = [i.span() <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> wxid.finditer(s)]
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">bs</span><span class="hljs-params">(t)</span>:</span>
+    l, r = <span class="hljs-number">0</span>, len(re_wxid)
+    <span class="hljs-keyword">while</span> l &lt; r:
+        m = (l+r) &gt;&gt; <span class="hljs-number">1</span>
+        <span class="hljs-keyword">if</span> re_wxid[m][<span class="hljs-number">0</span>] &gt;= t:
+            r = m
+        <span class="hljs-keyword">else</span>:
+            l = m + <span class="hljs-number">1</span>
+    <span class="hljs-keyword">return</span> l
+res = [] <span class="hljs-comment"># 结果</span>
+<span class="hljs-keyword">for</span> i,j <span class="hljs-keyword">in</span> re_wxh:
+    _id = bs(j)
+    _id = re_wxid[_id]
+    res.append({
+        <span class="hljs-string">'start'</span>: _id[<span class="hljs-number">0</span>],
+        <span class="hljs-string">'end'</span>: _id[<span class="hljs-number">1</span>],
+        <span class="hljs-string">'value'</span>: s[_id[<span class="hljs-number">0</span>]: _id[<span class="hljs-number">1</span>]],
+        <span class="hljs-string">'type'</span>: <span class="hljs-string">'微信号'</span>
+    })
+print(res)
+</div></code></pre>
+<h2 id="二算法类">二、算法类</h2>
+<ol start="4">
+<li>
+<p>介绍一下BERT？BERT和BiLSTM 有什么区别？BERT 和 Attention是什么关系？解释Q，K，V分别的作用？</p>
+<ol>
+<li>
+<p>Bert是google在近两年提出的语言模型，采用transformer的网络堆叠结构，主要利用attention机制提取文本中长依赖关系、参数量大</p>
+</li>
+<li>
+<p>Bert和BiLSTM不同主要有以下几点：</p>
+<ul>
+<li>基础网络结构不同，bert使用transformer，BiLSTM使用两个不同方向的LSTM组合。</li>
+<li>Bert在空间允许的情况下可以计算任意两个词之间的以来关系，这种计算难度不随词之间的距离增加；BiLSTM难以捕捉长距离的依赖关系</li>
+<li>Bert需要的显存空间比一般的BiLSTM要多，参数更多</li>
+<li>Bert比一般BiLSTM要深</li>
+</ul>
+</li>
+<li>
+<p>Bert使用transformer作为基础架构，而transformer主要包括self-attention层和全连接层，其中self-attention层起主要作为，用来捕捉文本之间的依赖关系</p>
+</li>
+<li>
+<p>Bert中attention的计算方式</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo separator="true">,</mo><mi>K</mi><mo separator="true">,</mo><mi>V</mi><mo>=</mo><msup><mi>L</mi><mi>Q</mi></msup><mo stretchy="false">(</mo><mover accent="true"><mrow><mi>V</mi><mi>e</mi><mi>c</mi></mrow><mo>^</mo></mover><mo stretchy="false">)</mo><mo separator="true">,</mo><msup><mi>L</mi><mi>K</mi></msup><mo stretchy="false">(</mo><mover accent="true"><mrow><mi>V</mi><mi>e</mi><mi>c</mi></mrow><mo>^</mo></mover><mo stretchy="false">)</mo><mo separator="true">,</mo><msup><mi>L</mi><mi>V</mi></msup><mo stretchy="false">(</mo><mover accent="true"><mrow><mi>V</mi><mi>e</mi><mi>c</mi></mrow><mo>^</mo></mover><mo stretchy="false">)</mo><mspace linebreak="newline"></mspace><mi>V</mi><mi>e</mi><mi>c</mi><mo>=</mo><mtext>softmax</mtext><mo stretchy="false">(</mo><mi>Q</mi><mi>K</mi><mo stretchy="false">)</mo><mi>V</mi></mrow><annotation encoding="application/x-tex">Q, K, V = L^Q(\hat{Vec}), L^K(\hat{Vec}), L^V(\hat{Vec})\\
+Vec = \text{softmax}(QK) V
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">Q</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.22222em;">V</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.19677em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.891331em;"><span style="top:-3.1130000000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">Q</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9467699999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.22222em;">V</span><span class="mord mathdefault">e</span><span class="mord mathdefault">c</span></span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.25em;"><span class="mord">^</span></span></span></span></span></span></span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8913309999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.07153em;">K</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9467699999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.22222em;">V</span><span class="mord mathdefault">e</span><span class="mord mathdefault">c</span></span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.25em;"><span class="mord">^</span></span></span></span></span></span></span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8913309999999999em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.22222em;">V</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9467699999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.22222em;">V</span><span class="mord mathdefault">e</span><span class="mord mathdefault">c</span></span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.25em;"><span class="mord">^</span></span></span></span></span></span></span><span class="mclose">)</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.22222em;">V</span><span class="mord mathdefault">e</span><span class="mord mathdefault">c</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord text"><span class="mord">softmax</span></span><span class="mopen">(</span><span class="mord mathdefault">Q</span><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="mclose">)</span><span class="mord mathdefault" style="margin-right:0.22222em;">V</span></span></span></span></span></p>
+<p>其中Q，K，V都是通过对词向量Vec进行全连接层变化得到的，Q代表query，K代表key，V代表value，通过Q和K得到当前词和其余词之间的权值，再通过V进行加权平均得到新的词向量表达</p>
+</li>
+</ol>
+</li>
+<li>
+<p>介绍卷积运算的过程，比如输入一个 3通道，尺寸为 (5, 5) 的图像，如果要输出 6 通道，尺寸为 (3, 3)，卷积层的参数应该如何设置？假设输出矩阵 A 的尺寸为 (6, 3, 3)，它的第一个数字A[0, 0, 0] 是如何计算出来的，具体到加减乘除。</p>
+<ol>
+<li>在不适用padding的情况下，可以使用3<em>3</em>6*3的卷积核，步长设为1</li>
+<li>假设输入矩阵为B，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>K</mi><mrow><mi>i</mi><mo separator="true">,</mo><mn>0</mn></mrow><mrow><mi>j</mi><mo separator="true">,</mo><mi>k</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">K_{i,0}^{j,k}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.379988em;vertical-align:-0.412972em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9670159999999999em;"><span style="top:-2.4231360000000004em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mpunct mtight">,</span><span class="mord mtight">0</span></span></span></span><span style="top:-3.1809080000000005em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span><span class="mpunct mtight">,</span><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.412972em;"><span></span></span></span></span></span></span></span></span></span>代表第<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo separator="true">,</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">i,0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">i</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">0</span></span></span></span>个卷积核下标为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo separator="true">,</mo><mi>j</mi></mrow><annotation encoding="application/x-tex">i,j</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">i</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.05724em;">j</span></span></span></span>的元素，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>B</mi><mrow><mi>i</mi><mo separator="true">,</mo><mi>j</mi></mrow></msup></mrow><annotation encoding="application/x-tex">B^{i,j}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05017em;">B</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mpunct mtight">,</span><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span></span></span></span></span></span></span></span></span>表示输入矩阵下标为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo separator="true">,</mo><mi>j</mi></mrow><annotation encoding="application/x-tex">i,j</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.85396em;vertical-align:-0.19444em;"></span><span class="mord mathdefault">i</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.05724em;">j</span></span></span></span>的元素</li>
+</ol>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mrow><mn>0</mn><mo separator="true">,</mo><mn>0</mn><mo separator="true">,</mo><mn>0</mn></mrow></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mn>3</mn></munderover><munderover><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>1</mn></mrow><mn>3</mn></munderover><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>1</mn></mrow><mn>3</mn></munderover><msubsup><mi>K</mi><mrow><mi>i</mi><mo separator="true">,</mo><mn>0</mn></mrow><mrow><mi>j</mi><mo separator="true">,</mo><mi>k</mi></mrow></msubsup><mo>∗</mo><msup><mi>B</mi><mrow><mi>j</mi><mo separator="true">,</mo><mi>k</mi></mrow></msup></mrow><annotation encoding="application/x-tex">A_{0,0,0} = \sum_{i=1}^3 \sum_{j=1}^3 \sum_{k=1}^3 K_{i,0}^{j,k}*B^{j,k}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault">A</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.301108em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">0</span><span class="mpunct mtight">,</span><span class="mord mtight">0</span><span class="mpunct mtight">,</span><span class="mord mtight">0</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:3.2148900000000005em;vertical-align:-1.4137769999999998em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8011130000000004em;"><span style="top:-1.872331em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.050005em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3000050000000005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.277669em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.8011130000000004em;"><span style="top:-1.872331em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.050005em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3000050000000005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.4137769999999998em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.801113em;"><span style="top:-1.8478869999999998em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.0500049999999996em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.300005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.302113em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9670159999999999em;"><span style="top:-2.4231360000000004em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mpunct mtight">,</span><span class="mord mtight">0</span></span></span></span><span style="top:-3.1809080000000005em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span><span class="mpunct mtight">,</span><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.412972em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8991079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05017em;">B</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8991079999999999em;"><span style="top:-3.1130000000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span><span class="mpunct mtight">,</span><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span></span></span></span></span></span></span></span></span></span></span></span></span></p>
+</li>
+</ol>
+<h2 id="三编程类">三、编程类</h2>
+<ol start="6">
+<li>排好序的数组，从中找到相加等于target数字的两个数的所有可能</li>
+</ol>
+<pre><code class="language-python"><div><span class="hljs-comment"># 比如，</span>
+<span class="hljs-comment"># 输入数组：[2, 3, 4, 7, 10, 12]</span>
+<span class="hljs-comment"># Target数：14</span>
+<span class="hljs-comment"># 输出： [(2, 12), (4, 10)]</span>
+<span class="hljs-comment"># def get_all_combs(array, target)</span>
+</div></code></pre>
+<pre><code class="language-python"><div><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_all_combs</span><span class="hljs-params">(array, target)</span>:</span>
+    al = len(array)
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">bs</span><span class="hljs-params">(t, l=<span class="hljs-number">0</span>, r=al)</span>:</span>
+        <span class="hljs-keyword">while</span> l &lt; r:
+            m = (l+r) &gt;&gt; <span class="hljs-number">1</span>
+            <span class="hljs-keyword">if</span> array[m] &gt;= t:
+                r = m
+            <span class="hljs-keyword">else</span>:
+                l = m + <span class="hljs-number">1</span>
+        <span class="hljs-keyword">return</span> l
+    res = []
+    <span class="hljs-keyword">for</span> i, t <span class="hljs-keyword">in</span> enumerate(array):
+        j = bs(target-t, i+<span class="hljs-number">1</span>)
+        <span class="hljs-keyword">if</span> j!=al <span class="hljs-keyword">and</span> array[j]==target-t:
+            res.append([array[i], array[j]])
+    <span class="hljs-keyword">return</span> res
+</div></code></pre>
+<ol start="7">
+<li>输入一个变形数组，及某个数字，输出这个数字在变形数组中的位置</li>
+</ol>
+<pre><code class="language-python"><div><span class="hljs-comment"># def find_num(array, num)  要求算法复杂度为 log(n)</span>
+<span class="hljs-comment"># 变形的方法是将一个排好序的数组某个位置之前的数放到数组末尾，比如</span>
+<span class="hljs-comment"># 原始数组为：</span>
+<span class="hljs-comment"># 2  3  6  9  10  12  24  34</span>
+<span class="hljs-comment"># 得到以下变形数组（将2 3 6放在了数组末尾）：</span>
+<span class="hljs-comment"># 9  10  12  24  34  2  3  6  </span>
+<span class="hljs-comment"># 比如，输入24和变形数组，输出 3</span>
+<span class="hljs-comment">#    说明：</span>
+<span class="hljs-comment"># 1.不需要写变形的code，输入已经是一个变形的数组了</span>
+<span class="hljs-comment"># 2.不知道具体将多少个数放在了数组的末尾</span>
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">find_num</span><span class="hljs-params">(array, num)</span>:</span>
+    nl = len(array)
+    <span class="hljs-keyword">if</span> array[<span class="hljs-number">-1</span>] &lt; array[<span class="hljs-number">0</span>]:
+        l, r = <span class="hljs-number">0</span>, nl<span class="hljs-number">-1</span>
+        <span class="hljs-keyword">while</span> r-l&gt;<span class="hljs-number">1</span>:
+            m = (l+r) &gt;&gt; <span class="hljs-number">1</span>
+            <span class="hljs-keyword">if</span> array[m] &gt; array[l]:
+                l = m
+            <span class="hljs-keyword">else</span>:
+                r = m
+        array = array[r:] + array[:r]
+        idx = r
+    <span class="hljs-keyword">else</span>:
+        idx = <span class="hljs-number">0</span>
+
+    l, r = <span class="hljs-number">0</span>, nl
+    <span class="hljs-keyword">while</span> l &lt; r:
+        m = (l+r) &gt;&gt; <span class="hljs-number">1</span>
+        <span class="hljs-keyword">if</span> array[m] &gt;= num:
+            r = m
+        <span class="hljs-keyword">else</span>:
+            l = m + <span class="hljs-number">1</span>
+    <span class="hljs-keyword">if</span> l!=nl <span class="hljs-keyword">and</span> array[l]==num:
+        <span class="hljs-keyword">if</span> l &gt;= nl-idx:
+            l -= nl-idx
+        <span class="hljs-keyword">else</span>:
+            l += idx
+        <span class="hljs-keyword">return</span> l
+    <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>
+</div></code></pre>
+<h2 id="四解决问题">四、解决问题</h2>
+<ol start="8">
+<li>判断输入文本中的要素的角色性质，请阐述完整的解决方案，不需要实现。</li>
+</ol>
+<pre><code class="language-python"><div><span class="hljs-comment"># 可以从几个方面：数据设计，模型设计，训练方法等等方面；</span>
+<span class="hljs-comment"># 比如：</span>
+<span class="hljs-comment"># 2018年7月1日16时许，我的手机13911111111接到电话19622222222，对方叫强尼，推荐保险，让转账到6222333333333333购买，我就用我支付宝5555555@qq.com转账了，后来发现是个骗子。我叫王小强。</span>
+<span class="hljs-comment"># 	要求输出：</span>
+<span class="hljs-comment">#     {</span>
+<span class="hljs-comment">#         '嫌疑人要素': [</span>
+<span class="hljs-comment">#             '强尼',</span>
+<span class="hljs-comment">#             '6222333333333333',</span>
+<span class="hljs-comment">#             '19622222222'</span>
+<span class="hljs-comment">#         ],</span>
+<span class="hljs-comment">#         '非嫌疑人要素': [</span>
+<span class="hljs-comment">#             '王小强',</span>
+<span class="hljs-comment">#             '13911111111',</span>
+<span class="hljs-comment">#             '5555555@qq.com'</span>
+<span class="hljs-comment">#         ]</span>
+<span class="hljs-comment">#     }</span>
+</div></code></pre>
+<ol>
+<li>数据设计：
+<ul>
+<li>对嫌疑人要素和非嫌疑人要素进行提取，把相应的要素编码为词向量。</li>
+<li>在设计三种词向量类型编码，一种嫌疑人要素类型，一种非嫌疑人类型，一种普通类型</li>
+</ul>
+</li>
+<li>模型设计：
+<ul>
+<li>使用Bert或者相关的LSTM模型对文本进行建模</li>
+<li>输入包括词向量、嫌疑人/非嫌疑人要素对应向量、词向量类型向量</li>
+<li>输出为角色性质，bert可以使用分类表示位，LSTM可以使用加权求和或者最后一位来进行分类</li>
+</ul>
+</li>
+<li>训练方法：
+<ul>
+<li>使用有监督的训练方式，可以使用交叉熵作为loss</li>
+<li>如果数据不均衡，可以通过过采样，或者差异权重loss等方式平衡样本对loss的贡献</li>
+</ul>
+</li>
+</ol>
+
+    </body>
+    </html>

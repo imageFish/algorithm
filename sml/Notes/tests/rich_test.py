@@ -78,7 +78,7 @@ def find_num(array, num):
             l += idx
         return l
     return -1
-find_num([9,10,12,24,34,2,3,6], 24)
+# re_match_()
 import string
 import random
 import numpy as np
@@ -86,30 +86,39 @@ import pandas as pd
 ##%% md
 # 随机生成一些名字和分数
 ##%%
+cnt = 100
 name = set()
-while len(name) < 100:
+while len(name) < cnt:
     name.add(''.join(random.choice(string.ascii_lowercase) for _ in range(5)))
 name = list(name)
 
-df_score = pd.DataFrame({'name': name, 'score': np.random.randint(80, 100, 100)})
+df_score = pd.DataFrame({'name': name, 'score': np.random.randint(80, 100, cnt)})
 df_score.head()
 ##%% md
 # 给随机名字分配班级
 ##%%
 classes = ['A', 'B', 'C']
-df_class = pd.DataFrame({'name': name, 'class': [random.choice(classes) for _ in range(100)]})
+df_class = pd.DataFrame({'name': name, 'class': [random.choice(classes) for _ in range(cnt)]})
 df_class = df_class.sample(frac=1).reset_index(drop=True)
 df_class.head()
 ##%% md
 # 题目 1： 按照名字合并分数和班级
 ##%%
-print(df_class)
+df_all = pd.merge(df_score, df_class, on='name')
+print(df_all)
 ##%% md
 # 题目 2： 取出 A 班的成绩表，按照分数降序排序
 ##%%
-
+df_A_score = df_all.loc[df_all['class']=='A']
+df_A_score.sort_values(by='score', inplace=True, ascending=False)
+print(df_A_score)
 ##%% md
 # 题目 3： 计算 A、B、C 班的平均分
 ##%%
-
+classes = ['A', 'B', 'C']
+res = [] # 一次为A、B、C三班的平均值
+for c in classes:
+    res.append(df_all.loc[df_all['class']==c]['score'].mean())
+print(res)
+print('done')
 ##%%

@@ -25,3 +25,5 @@ GRU 参数更少，性能相似
 - update:
   - $\hat{h_t} = \tanh(W \cdot [r_t \cdot h_{t-1};x_t])$
   - $h_t = (1-z_t) \cdot h_{t-1} + z_t \cdot \hat{h_t}$
+## CBOW and Skip-gram
+negative sampling 和 hierarchical softmax是两种改进方式， hs采用哈弗曼树的结构对所有词建树，每次只更新上下文词和特定树节点参数，而ns则是每次只对负采样的词和正例进行更新。
