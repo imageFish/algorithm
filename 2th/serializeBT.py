@@ -947,12 +947,67 @@ class Solution:
             i = j
         return res
 
+    @classmethod
+    def canPartition(self, nums):
+        s = sum(nums)
+        if s%2 != 0:
+            return False
+        s = s >> 1
+        dp = [False] * (s+1)
+        dp[0] = True
+        for n_t in nums:
+            for i in range(s, -1, -1):
+                if i-n_t>=0:
+                    dp[i] = dp[i-n_t] or dp[i]
+            print(dp)
+        return dp[s]
+
+    @classmethod
+    def minimumTotal(self, triangle):
+        for i in range(1, len(triangle)):
+            for j in range(len(triangle[i])):
+                if 0<j and j<len(triangle[i-1]):
+                    triangle[i][j] += min(triangle[i-1][j], triangle[i-1][j-1])
+                elif j==len(triangle[i-1]):
+                    triangle[i][j] += triangle[i-1][j-1]
+                else:
+                    triangle[i][j] += triangle[i-1][j]
+        return min(triangle[-1])
+
+    @classmethod
+    def maximalSquare(self, matrix):
+        """
+        :type matrix: List[List[str]]
+        :rtype: int
+        """
+        n = len(matrix)
+        if n==0: return 0
+        m = len(matrix[0])
+        matrix = [[int(tt) for tt in t] for t in matrix]
+        res = 0
+        matrix.insert(0, [0]*(m+1))
+        for i in range(1, n+1):
+            matrix[i].insert(0, 0)
+        for i in range(1, n+1):
+            for j in range(1, m+1):
+                if matrix[i][j]==1:
+                    matrix[i][j] = min(matrix[i-1][j], matrix[i][j-1], matrix[i-1][j-1])+1
+                    res = max(res, matrix[i][j])
+        res *= res
+        return res
+
 a = [3,4,5,1,2]
 b = [4, 1]
 a = Codec.deserialize(a)
 b = Codec.deserialize(b)
-a = '(()'
-res = Solution.trap([0,1,0,2,1,0,1,3,2,1,2,1])
+a = [
+    ["1","0","1","0","0"],
+    ["1","0","1","1","1"],
+    ["1","1","1","1","1"],
+    ["1","0","0","1","0"]
+]
+# a = [[int(tt) for tt in t] for t in a]
+res = Solution.maximalSquare(a)
 print(res)
 
 opts = ["MedianFinder","addNum","addNum","findMedian","addNum","findMedian"]
