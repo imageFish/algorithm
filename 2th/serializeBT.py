@@ -996,6 +996,33 @@ class Solution:
         res *= res
         return res
 
+    @classmethod
+    def KMP(self, t, p):
+        tl, pl = len(t), len(p)
+        pmt = [0] * (pl+1)
+        pmt[0] = -1
+        i, j = 0, -1
+        while i < pl:
+            if j==-1 or p[i]==p[j]:
+                j += 1
+                i += 1
+                pmt[i] = j
+            else:
+                j = pmt[j]
+        res = []
+        i, j = 0, 0
+        while i < tl:
+            if j==-1 or t[i]==p[j]:
+                i += 1
+                j += 1
+            else:
+                j = pmt[j]
+            if j == pl:
+                res.append([i-pl, i])
+                j = 0
+        print(res)
+
+
 a = [3,4,5,1,2]
 b = [4, 1]
 a = Codec.deserialize(a)
@@ -1007,7 +1034,7 @@ a = [
     ["1","0","0","1","0"]
 ]
 # a = [[int(tt) for tt in t] for t in a]
-res = Solution.maximalSquare(a)
+res = Solution.KMP('abababababac', 'abab')
 print(res)
 
 opts = ["MedianFinder","addNum","addNum","findMedian","addNum","findMedian"]
