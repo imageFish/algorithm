@@ -51,3 +51,12 @@ def add(self, a, b):
         a, b = a^b, (a&b)<<1 & x 
     return a if a <= 0x7fffffff else ~(a ^ x) # max positive int 0x7fffffff, if a number is greater then its, it is nagetive and need to ~ its bit flag.
 ```
+## LRU
+least recently used最近最少使用，使用队列维护存放的值：
+- 存key时，如果key在队列中，直接修改。如果不在，在队列尾端添加key，如果满了删除队首
+- 查询时，如果有，则返回值，没有则-1
+## 二项分布
+$$
+E = np\\
+D = np(1-p)
+$$
